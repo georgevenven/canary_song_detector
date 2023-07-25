@@ -34,7 +34,7 @@ def f_eproc(nfft, hop, nfft_periodicity, hop_periodicity, filenumber, dir_name):
     plt.xlabel('Time (s)')
     plt.ylabel('Frequency (Hz)')
     plt.title('Spectrogram')
-    plt.colorbar()
+    plt.colorbar()w
 
     g = np.sum(np.abs(s), axis=0)  # Sum along frequency axis
 
