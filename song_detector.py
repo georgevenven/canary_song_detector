@@ -39,6 +39,8 @@ def load_song(self, file_path):
         spec = torch.Tensor(arr2)
         raw_labels = torch.Tensor(arr1).int()
     
+    # amplitude 
+
     return spec
 
 class Song_Detector_Model(nn.Module):
