@@ -2,8 +2,10 @@ sample_not_songs
 sample_songs
 test
 train
-model_weights.pth
+/home/george-vengrovski/Documents/canary_song_detector/model_weights_1d_66k.pth
 archive
 USA5207
 USA5199
 testing_arena
+imgs
+umap.html
