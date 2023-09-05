@@ -98,7 +98,7 @@ class SpectrogramProcessor:
         means = arr.mean(dim=1, keepdim=True)
         stds = arr.std(dim=1, keepdim=True)
         arr = (arr - means) / (stds + 1e-7)
-        pumap = PUMAP(epochs=30, lr=1e-3, match_nonparametric_umap=True, n_components=reduction_dims)
+        pumap = PUMAP(epochs=30, lr=1e-3, match_nonparametric_umap=False, n_components=reduction_dims)
         pumap.fit(arr)
         embedding_pumap = pumap.transform(arr)
 
