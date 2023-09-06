@@ -79,8 +79,9 @@ def process_files(src, data_root):
                             mat_to_npy(src=os.path.join(day_path, file), dst=data_root, filename=file)
 
 
-def inference_on_data_set(kmeans, dir, plot_dir = "/plots", save_plots=True):
-    plot_dir = dir + plot_dir
+def inference_on_data_set(kmeans, model, data_root, device, dir, plot_dir="plots", save_plots=True):
+    plot_dir = os.path.join(dir, plot_dir)
+    os.makedirs(plot_dir, exist_ok=True)  # create directory if it doesn't exist
 
     # Initialize CSV file
     csv_file_path = os.path.join(dir, "song_segments.csv")
@@ -99,8 +100,8 @@ def inference_on_data_set(kmeans, dir, plot_dir = "/plots", save_plots=True):
     else:
         invert_labels = True 
 
-    for i, file in tqdm(enumerate(os.listdir(dir)), desc="Processing files", total=len(os.listdir(dir))):
-        f = np.load(os.path.join(data_root, file))
+    for i, file in tqdm(enumerate(os.listdir(data_root)), desc="Processing files", total=len(os.listdir(dir))):
+        f = np.load(os.path.join(data_root, file), allow_pickle=True)
         spectogram = f['s']
         spectogram = spectogram[8:500,:]
         # Normalize (Z-score normalization)
@@ -127,7 +128,7 @@ def inference_on_data_set(kmeans, dir, plot_dir = "/plots", save_plots=True):
         labels = pad_and_relabel(labels, target_label=0, n=50)
         # Save plot if required
         if save_plots:
-            plot_spectrogram_and_labels(f['s'], labels, save_dir=plot_dir)
+            plot_spectrogram_and_labels(f['s'], labels, save_dir=plot_dir, file_name=(file.split(".")[0] + ".png"))
 
         # Detect song sequences
         contains_song = any(label == 0 for label in labels)
@@ -168,34 +169,34 @@ if __name__ == "__main__":
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
 
-    print("Processing files...")
-    process_files(src=src, data_root=data_root)
-    print("Files processed.")
+    # print("Processing files...")
+    # process_files(src=src, data_root=data_root)
+    # print("Files processed.")
 
-    print("Initializing Spectrogram Processor...")
-    processor = psuedo_label_generation.SpectrogramProcessor(data_root=data_root, train_dir=train, test_dir=test, n_clusters=100)
-    print("Spectrogram Processor initialized.")
+    # print("Initializing Spectrogram Processor...")
+    # processor = psuedo_label_generation.SpectrogramProcessor(data_root=data_root, train_dir=train, test_dir=test, n_clusters=100)
+    # print("Spectrogram Processor initialized.")
     
-    print("Clearing train and test directories...")
-    processor.clear_directory(train)
-    processor.clear_directory(test)
-    print("Directories cleared.")
+    # print("Clearing train and test directories...")
+    # processor.clear_directory(train)
+    # processor.clear_directory(test)
+    # print("Directories cleared.")
 
-    print("Generating train and test datasets...")
-    processor.generate_train_test()
-    print("Datasets generated.")
+    # print("Generating train and test datasets...")
+    # processor.generate_train_test()
+    # print("Datasets generated.")
 
-    print("Generating embeddings...")
-    processor.generate_embedding(samples=5e3, time_bins_per_sample=100, reduction_dims=2)
-    print("Embeddings generated.")
+    # print("Generating embeddings...")
+    # processor.generate_embedding(samples=5e3, time_bins_per_sample=100, reduction_dims=2)
+    # print("Embeddings generated.")
     
-    print("Plotting embeddings and labels...")
-    processor.plot_embedding_and_labels()
-    print("Plots generated.")
+    # print("Plotting embeddings and labels...")
+    # processor.plot_embedding_and_labels()
+    # print("Plots generated.")
 
-    print("Generating train and test labels...")
-    processor.generate_train_test_labels(reduce=False)
-    print("Labels generated.")
+    # print("Generating train and test labels...")
+    # processor.generate_train_test_labels(reduce=False)
+    # print("Labels generated.")
 
     print("Creating data loaders...")
     train_dataset = SongDataSet_Image(train)
@@ -230,7 +231,7 @@ if __name__ == "__main__":
     analysis.plot_umap(output_dir=dst)
     print("UMAP plotted.")
 
-    inference_on_data_set(kmeans=kmeans, dir=dst)
+    inference_on_data_set(kmeans=kmeans, model=model, device=device, dir=dst, plot_dir="plots", save_plots=True, data_root=data_root)
 
     print("done!")
 
