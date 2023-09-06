@@ -12,7 +12,6 @@ imgs
 embedding.pkl
 ground_truth_arr.npy
 reducer.pkl
-category_colors.pkl
 cluster_labels_arr.npy
 predictions_arr.npy
 psuedo_labels_arr.npy
@@ -20,3 +19,4 @@ lightning_logs
 saved_models
 spec_arr.npy
 imgs
+*.png
