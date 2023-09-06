@@ -96,20 +96,20 @@ class TweetyBERTAnalysis:
         f1 = f1_score(ground_truth_labels, cluster_labels, average='weighted')
         return f1
 
-    def plot_umap(self, file_path, output_dir, plot_ground_truth=False):
+    def plot_umap(self, output_dir, plot_ground_truth=False):
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        with open(file_path, 'rb') as file:
-            color_map_data = pickle.load(file)
-
-        label_to_color = {label: tuple(color) for label, color in color_map_data.items()}
         predictions = np.concatenate(self.data_storage['predictions'], axis=0)
         ground_truth_labels = np.concatenate(self.data_storage['ground_truth_labels'], axis=0)
         cluster_labels = np.concatenate(self.data_storage['cluster_labels'], axis=0)
 
         num_unique_clusters = len(np.unique(cluster_labels))
         new_cmap = cm.get_cmap('jet', num_unique_clusters)
+        
+        # Using the same color map for ground truth
+        label_to_color = {label: new_cmap(i / num_unique_clusters) for i, label in enumerate(np.unique(ground_truth_labels))}
+        
         cluster_to_color = {label: new_cmap(i / num_unique_clusters) for i, label in enumerate(np.unique(cluster_labels))}
 
         colors_for_clusters = [np.mean([cluster_to_color[int(lbl)] for lbl in row], axis=0) for row in cluster_labels]
